@@ -12,7 +12,11 @@ void error_handling(char *message);
 int main(int argc, char **argv) {
     int sock;
     char message[BUFSIZE];
-    int str_len, addr_size;
+    int str_len, addr_size, i;
+
+    char msg1[] = "Good ";
+    char msg2[] = "Evening ";
+    char msg3[] = "Everybody!";
 
     struct sockaddr_in serv_addr;
     struct sockaddr_in from_addr;
@@ -31,19 +35,16 @@ int main(int argc, char **argv) {
     serv_addr.sin_addr.s_addr = inet_addr(argv[1]);
     serv_addr.sin_port = htons(atoi(argv[2]));
 
-    while(1)
+    sendto(sock, msg1, strlen(msg1), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    sendto(sock, msg2, strlen(msg2), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    sendto(sock, msg3, strlen(msg3), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+
+    for(i=0; i<3; i++) 
     {
         addr_size = sizeof(from_addr);
-        
-        fputs("Enter message (q to quit) : ", stdout);
-        fgets(message, sizeof(message), stdin);
-        if(!strcmp(message, "q\n")) break;
-
-        sendto(sock, message, strlen(message), 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
         str_len = recvfrom(sock, message, BUFSIZE, 0, (struct sockaddr*)&from_addr, &addr_size);
-
         message[str_len] = 0;
-        printf("Received message from server : %s", message);
+        printf("Received message(Sequence #%d) from server : %s\n", i, message);
     }
 
     close(sock);

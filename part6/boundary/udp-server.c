@@ -12,7 +12,7 @@ void error_handling(char *message);
 int main(int argc, char **argv) {
     int serv_sock;
     char message[BUFSIZE];
-    int str_len;
+    int str_len, num=0;
 
     struct sockaddr_in serv_addr;
     struct sockaddr_in clnt_addr;
@@ -34,11 +34,14 @@ int main(int argc, char **argv) {
 
     if(bind(serv_sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("bind() error");
-    
+
+    sleep(5);
     
     while(1) {
         clnt_addr_size = sizeof(clnt_addr);
+        sleep(1);
         str_len = recvfrom(serv_sock, message, BUFSIZE, 0, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
+        printf("Sequence : %d\n", num++);
         sendto(serv_sock, message, str_len, 0, (struct sockaddr *)&clnt_addr, sizeof(clnt_addr));
     }
 
